@@ -38,8 +38,8 @@ class NodeSerialComPort:
         rospy.init_node('node_serial_mcu', anonymous=True)
         #Pub
         self.rate = 100  
-        self.vel_pub     = rospy.Publisher('vel_pub',    Twist,      queue_size=self.rate)
-        self.theta_pub   = rospy.Publisher('theta_pub',  Float32,    queue_size=self.rate)   
+        self.vel_pub     = rospy.Publisher('robot_vel_pub',      Twist,      queue_size=self.rate)
+        self.theta_pub   = rospy.Publisher('robot_yaw_imu_pub',  Float32,    queue_size=self.rate)   
         #Sub
         rospy.Subscriber('/cmd_vel', Twist, self.sub_cmd_vel_callback) # def: sub_cmd_vel_callback()
 
@@ -54,7 +54,7 @@ class NodeSerialComPort:
         self.Len_Float_rx       = 8 #int(8) # nhan 8 float = 8*4 + 1 = 33 bytes
         self.Len_Float_rx_buff  = 33 #int(self.Len_Float_rx*4 + 1)
         self.data = list([])    #list empty || data.append(newdata) || data.clear() == []
-        self.dataFloat = [0]*self.Len_Float_rx #luu data Float
+        self.dataFloat = [0.0]*self.Len_Float_rx #luu data Float
 
         self.last_time = rospy.Time.now()
         # varible 
@@ -65,16 +65,19 @@ class NodeSerialComPort:
     
     #ref: https://pyserial.readthedocs.io/en/latest/pyserial_api.html
     #ref: https://pyserial.readthedocs.io/en/latest/shortintro.html
+    
     # PC send data to MCU via Serial Tx
+    #PASSED
     def data_send(self):
         # 02 float need send
         #ex: Serial.write(b"\x01" + struct.pack("<ff", float1, float2))
-        self.v = 1.0
-        self.w = 2.0
-        data = pack('<ff', self.v, self.w) #< = litle-endian
+        temp_data = 0.12345
+        data = pack('<fff', self.v, self.w, temp_data) #< = litle-endian, 0.1234: du phong
         self.ser.write(data + b'\r')  #PASSED #'\r' = 0x0D = 13
         #rospy.loginfo("[DEBUG][node_serial_mcu][Tx] -- self.ser.write ---, length: = " + str(len(data + b'\r'))) #PASSED
+    
     # PC receive data from MCU via Serial Rx
+    #PASSED
     def data_receive(self): #Nhan duoc data la gui luon ..... (MCU gui tam ~ 40ms / buff_data)  
         x = self.ser.read(1) #read 1byte, timeout = 1s; return: bytes
         #rospy.loginfo("[DEBUG]" + str(x))
@@ -89,16 +92,23 @@ class NodeSerialComPort:
                     #rospy.loginfo("[DEBUG] OKOKOKKKOOK" + str(len(self.data)) )
                     for i in range(self.Len_Float_rx): # 0 -> (Len_Float_rx-1)
                         buffer = self.data[i*4:i*4+4]
-                        aa= bytearray(buffer)
-                        self.dataFloat[i] = unpack('<f', aa)
+                        arr= bytearray(buffer)
+                        tempFloat = unpack('<f', arr)               # <type 'tuple'>(0.0,)
+                        self.dataFloat[i] = list(tempFloat)[0]      # <type 'float'>0.0
                         #rospy.loginfo("[DEBUG][node_serial_mcu][Rx]: " +str(i) +": =" +str(self.dataFloat[i])) #PASSED
 
-                    current_time = rospy.Time.now()
-                    dt = (current_time - self.last_time).to_sec()   #deta_time
-                    self.last_time = current_time                   #update time
+                    #PASSED: ~5ms (new ~ 20ms)
+                    # current_time = rospy.Time.now()
+                    # dt = (current_time - self.last_time).to_sec()   #deta_time
+                    # self.last_time = current_time                   #update time
                     #rospy.loginfo("[DEBUG][node_serial_mcu][Rx] TimeSample: = " + str(dt) + "s, Freq = " + str(1/dt))
+                    
+                    #rospy.loginfo("[DEBUG][node_serial_mcu][Rx]:" + str(type(self.dataFloat[1])) + str(self.dataFloat[1]))
+                    self.vel_pub_msg.linear.x    = self.dataFloat[0] #v
+                    self.vel_pub_msg.angular.z   = self.dataFloat[1] #w
+                    self.theta_pub_msg.data      = self.dataFloat[5] # yaw_imu
                     #PASSED: 5ms - 200Hz
-
+                    self.rx_send_ok = True  #Pub: pub_def
             except Exception as inst:
                 pass
                 #rospy.loginfo(type(inst)) 
