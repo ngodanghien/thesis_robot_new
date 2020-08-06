@@ -27,8 +27,8 @@ class OdomPublisher:
         self.odom_pub               = rospy.Publisher("odom", Odometry, queue_size=self.rate)    #50Hz
         self.odom_broadcaster_tf    = tf.TransformBroadcaster()
         #sub from note (receive data from MCU send up) : node_serial_rx.
-        rospy.Subscriber('vel_pub',     Twist,      self.vel_callback)
-        rospy.Subscriber('theta_pub',   Float32,    self.yaw_callback)
+        rospy.Subscriber('robot_vel_pub',     Twist,      self.vel_callback)
+        rospy.Subscriber('robot_yaw_imu_pub',   Float32,    self.yaw_callback)
         #param : Note: Neu server ko co thi` ros tu gan: frame_id = '/odom'
         # self.L = rospy.get_param('~robot_wheel_separation_distance', 0.37)
         # self.R = rospy.get_param('~robot_wheel_radius', 0.0625)
@@ -103,7 +103,7 @@ class OdomPublisher:
 
     # function Callback: yaw from MPU6050
     def yaw_callback(self,yaw): #ok
-        seft.yaw_imu = yaw.data
+        self.yaw_imu = yaw.data
 
 def main():
     odom_publisher = OdomPublisher()
