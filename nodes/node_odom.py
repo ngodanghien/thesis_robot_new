@@ -1,5 +1,7 @@
-#!/usr/bin/env python
 #!/usr/bin/python
+# Author: hiennd
+# Date: 06/08/2020
+# Test: PASSED (06/08/2020)
 
 import rospy
 import roslib
