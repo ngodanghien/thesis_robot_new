@@ -1,0 +1,20 @@
+#http://linux-tips.org/t/prevent-modem-manager-to-capture-usb-serial-devices/284/2.
+
+#cp rules /etc/udev/rules.d/
+#sudo udevadm control --reload-rules
+#sudo udevadm trigger
+
+#ATTRS{idVendor}=="0483" ATTRS{idProduct}=="5740", ENV{ID_MM_DEVICE_IGNORE}="1", MODE:="0666"
+#ATTRS{idVendor}=="0483" ATTRS{idProduct}=="df11", MODE:="0666"
+#ATTRS{idVendor}=="fff1" ATTRS{idProduct}=="ff48", ENV{ID_MM_DEVICE_IGNORE}="1", MODE:="0666"
+#ATTRS{idVendor}=="10c4" ATTRS{idProduct}=="ea60", ENV{ID_MM_DEVICE_IGNORE}="1", MODE:="0666"
+
+#USB2COM CH340-MCU :: Bus 003 Device 006: ID 1a86:7523 QinHeng Electronics HL-340 USB-Serial adapter
+#ATTRS{idVendor}=="1a86" ATTRS{idProduct}=="7523", MODE:="0666"
+#ref: https://www.silabs.com/community/interface/knowledge-base.entry.html/2016/06/06/fixed_tty_deviceass-XzTf
+#ref: https://www.domoticz.com/wiki/Assign_fixed_device_name_to_USB_port
+#SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ATTRS{serial}=="00492F60", SYMLINK+="ttySLAB0"
+SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", MODE:="0666", SYMLINK+="ttyUSB_MCU"
+
+#USB2COM - Lida :: Bus 003 Device 007: ID 10c4:ea60 Cygnal Integrated Products, Inc. CP210x UART Bridge / myAVR mySmartUSB light
+SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", MODE:="0666", SYMLINK+="ttyUSB_Lidar"

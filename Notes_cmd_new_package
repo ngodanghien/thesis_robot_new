@@ -1,10 +1,5 @@
 # Notes: 06/08/2020. hiennd
 $ catkin_create_pkg thesis_robot_new std_msgs rospy roscpp
-    Created file thesis_robot_new/package.xml
-    Created file thesis_robot_new/CMakeLists.txt
-    Created folder thesis_robot_new/include/thesis_robot_new
-    Created folder thesis_robot_new/src
-    Successfully created files in /home/hiennd/catkin_ws/src/thesis_robot_agv/thesis_robot_new. Please adjust the values in package.xml.
 $ git init
 $ git add -A 
 $ git commit -m "create new package of ros"
