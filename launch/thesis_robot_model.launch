@@ -1,39 +1,46 @@
-<!-- Author:       hiennd
-Create date:  07/08/2020
-Test:        ??? -->
-
 <launch>
 
   <!-- Define COMPort USB2COM -->
   <arg name="portSTM32" default="/dev/ttyUSB_MCU"/>
   <arg name="portLidar" default="/dev/ttyUSB_Lidar"/> 
+   
+  <!-- link for odom -->
+  <arg name="frame_id" default="odom"/> 
+  <arg name="child_frame_id" default="base_footprint"/> 
 
-  <param name="robot_description" textfile="$(find thesis_robot)/urdf/thesis_robot.xacro" />
+  <param name="robot_description" textfile="$(find thesis_robot_new)/urdf/thesis_robot_new.xacro" />
+    <!-- <param name="robot_description" command="$(find xacro)/xacro -+-inorder '$(find thesis_robot_new)/urdf/thesis_robot_new.xacro'" /> -->
 
-  <!-- Neu ko dung` node ben duoi: No transform from [left_wheel] to [base_link] .... -->
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+  </node>
 
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
     <param name="publish_frequency" type="double" value="50.0" />
   </node>
 
   <!-- Call Rosserial_python connect MCU -->
-  <!-- <node pkg="rosserial_python" type="serial_node.py" name="rosserial_python" output="screen">
-    <param name="port" type="string" value="$(arg portSTM32)"/>
-    <param name="baud" value="256000"/>
-  </node> -->
+  <node name="node_serial_mcu" pkg="thesis_robot_new" type="node_serial.py"  output="screen">
+    <param name="~port" type="string" value="$(arg portSTM32)"/>
+    <param name="~baud" value="256000"/>
+  </node>
+
+  <!-- Call odom pub node -->
+  <node name="odometry_publisher" pkg="thesis_robot_new"  type="node_odom.py"  output="screen">
+    <param name="~frame_id"       type="string"           value="$(arg frame_id)"/>
+    <param name="~child_frame_id" type="string"           value="$(arg child_frame_id)"/>
+  </node>
 
   <!-- Call Lidar RPLidar A3 -->
-  <!-- <node name="rplidarNode"          pkg="rplidar_ros"  type="rplidarNode" output="screen">
-  <param name="serial_port"         type="string" value="$(arg portLidar)"/>
-  <param name="serial_baudrate"     type="int"    value="115200"/>
+  <node name="rplidarNode"            pkg="rplidar_ros"   type="rplidarNode" output="screen">
+    <param name="serial_port"         type="string"       value="$(arg portLidar)"/>
+    <param name="serial_baudrate"     type="int"          value="115200"/>
 
-  <param name="frame_id"            type="string" value="base_scan"/>   
-  <param name="inverted"            type="bool"   value="false"/>
-  <param name="angle_compensate"    type="bool"   value="true"/>
-  </node> -->
+    <param name="frame_id"            type="string"       value="base_scan"/>   
+    <param name="inverted"            type="bool"         value="false"/>
+    <param name="angle_compensate"    type="bool"         value="true"/>
+  </node>
 
   <!-- Debug with RVIZ ... -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find thesis_robot)/rviz/thesis_robot_model.rviz" required="true" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find thesis_robot_new)/rviz/thesis_robot_model.rviz" required="true" />
 
 </launch>

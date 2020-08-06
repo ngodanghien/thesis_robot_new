@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<robot name="thesis_robot_new" xmlns:xacro="http://ros.org/wiki/xacro">
+
+
+<!-- Notes: Hiennd, 27/07/2020
+      ref: http://wiki.ros.org/urdf/XML/link
+      ref: http://wiki.ros.org/urdf/Tutorials/Adding%20Physical%20and%20Collision%20Properties%20to%20a%20URDF%20Model
+      ref: http://wiki.ros.org/urdf/XML/joint
+-->
+  <link name="base_footprint"/>
+  
+  <joint name="base_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+  </joint>
+
+<!-- Base Link -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0.0365" rpy="0 0 0" />
+      <geometry>
+          <box size="0.3757 0.280 0.003"/>  
+      </geometry>
+      <material name="blue">
+        <color rgba="0 0.5 1 1"/>
+      </material>
+    </visual>
+ 
+    <collision>
+       <origin xyz="0 0 0.165" rpy="0 0 0" /> <!-- 0.165 = 0.33/2-->
+      <geometry>
+        <box size="0.3757 0.280 0.33"/>
+      </geometry>
+    </collision>
+
+
+    <!-- Caster -->
+  
+    <visual name="caster">
+      <origin xyz="0.095 0 0.0625" rpy="1.570796 0 0" />
+      <geometry>
+          <cylinder length="0.04" radius="0.0625" />
+      </geometry>
+      <material name="black">
+        <color rgba="0.05 0.05 0.05 1"/>
+      </material>
+    </visual>
+
+    <!-- Tam phia tren de MCU + Linux -->
+    <visual name="base_level1">
+      <origin xyz="0 0 0.125" rpy="0 0 0" />
+      <geometry>
+          <box size="0.3757 0.280 0.003"/>  
+      </geometry>
+      <material name="blue">
+        <color rgba="0 0.5 1 1"/>
+      </material>
+    </visual>
+
+     <!-- Tam phia tren cung -->
+    <visual name="base_level2">
+      <origin xyz="0 0 0.325" rpy="0 0 0" /> <!--125+200=325cm-->
+      <geometry>
+          <box size="0.3757 0.280 0.003"/>  
+      </geometry>
+      <material name="blue">
+        <color rgba="0 0.5 1 1"/>
+      </material>
+    </visual>
+
+     <!-- 4 cot khung robot -->
+    <visual name="row1">
+      <origin xyz="0.125 0.125 0.180" rpy="0 0 0" />
+      <geometry>
+          <box size="0.02 0.02 0.3"/>
+      </geometry>
+      <material name="yellow">
+        <color rgba="1 1 0.75 1"/>
+      </material>
+    </visual>
+
+    <visual name="row2">
+      <origin xyz="-0.150 -0.125 0.180" rpy="0 0 0" />
+      <geometry>
+          <box size="0.02 0.02 0.3"/>
+      </geometry>
+      <material name="yellow">
+        <color rgba="1 1 0.75 1"/>
+      </material>
+    </visual>
+
+    <visual name="row3">
+      <origin xyz="-0.150 0.125 0.180" rpy="0 0 0" />
+      <geometry>
+          <box size="0.02 0.02 0.3"/>
+      </geometry>
+      <material name="yellow">
+        <color rgba="1 1 0.75 1"/>
+      </material>
+      </visual>
+
+    <visual name="row4">
+      <origin xyz="0.125 -0.125 0.180" rpy="0 0 0" />
+      <geometry>
+          <box size="0.02 0.02 0.3"/>
+      </geometry>
+      <material name="yellow">
+        <color rgba="1 1 0.75 1"/>
+      </material>
+    </visual>
+
+    <!-- De phia duoi Lidar -->
+    <visual name="DeLidar">
+      <origin xyz="0 0 0.140" rpy="0 0 0" /> <!--12+5/2-->
+      <geometry>
+          <box size="0.11 0.07 0.025"/>
+      </geometry>
+      <material name="yellow">
+        <color rgba="1 1 0.75 1"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Left Wheel: wheel_left_joint && wheel_left_link -->
+  <link name="wheel_left_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.570796 0 0" />
+      <geometry>
+          <cylinder length="0.04" radius="0.0625" />
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="1.570796 0 0" />
+      <geometry>
+        <cylinder length="0.04" radius="0.0625" />
+      </geometry>
+    </collision>
+
+    <inertial>
+			<mass value="0.1"/>
+			<origin xyz="0 0 0"/>
+			<inertia ixx="0.012411765597" ixy="-0.000711733678" ixz="0.00050272983"
+				 iyy="0.015218160428" iyz="-0.000004273467" izz="0.011763977943"/>
+  	</inertial>
+  </link>
+
+   
+  <joint name="wheel_left_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="wheel_left_link"/>
+    <origin xyz="-0.12535 0.165 0.0625" rpy="0 0 0" /> 
+    <axis xyz="0 1 0" />
+  </joint>
+
+    <!-- Right Wheel : wheel_right_joint && wheel_right_link-->
+  <link name="wheel_right_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.570796 0 0" />
+      <geometry>
+          <cylinder length="0.04" radius="0.0625" />
+      </geometry>
+      <material name="black">
+        <color rgba="0.05 0.05 0.05 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="1.570796 0 0" />
+      <geometry>
+        <cylinder length="0.04" radius="0.0625" />
+      </geometry>
+    </collision>
+
+    <inertial>
+			<mass value="0.1"/>
+			<origin xyz="0 0 0"/>
+			<inertia ixx="0.012411765597" ixy="-0.000711733678" ixz="0.00050272983"
+				 iyy="0.015218160428" iyz="-0.000004273467" izz="0.011763977943"/>
+  	</inertial>
+
+  </link>
+
+ 
+  <joint name="wheel_right_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="wheel_right_link"/>
+    <origin xyz="-0.12535 -0.165 0.0625" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+
+  <!-- IMU -->
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="0 0 0.0365" rpy="0 0 0" />
+  </joint>
+
+  <link name="imu_link"/>
+ 
+  <joint name="scan_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="base_scan"/>
+    <origin xyz="0 0 0.175" rpy="0 0 3.14159"/>   
+  </joint>
+
+  <link name="base_scan">
+    <visual>
+      <origin xyz="0 0 0.0" rpy="0 0 3.14159"/>   
+      <geometry>
+        <mesh filename="package://thesis_robot_new/urdf/lds.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="dark"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="0.0315" radius="0.055"/>  
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.114" />
+      <origin xyz="0 0 0" />
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0"
+               iyy="0.001" iyz="0.0"
+               izz="0.001" />
+    </inertial>
+  </link>
+
+</robot>
