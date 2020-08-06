@@ -3,6 +3,28 @@
 # Date: 06/08/2020
 # Test: PASSED (06/08/2020)
 
+msg = """
+    Author: hiennd
+    Create date: 06/08/2020
+    Test: PASSED 07/08/2020
+    -----------------------------------
+    Node: 
+        * /odometry_publisher
+    
+    Published topics:
+        * /odom             [nav_msgs/Odometry]
+        * /tf               [tf2_msgs/TFMessage]
+
+    Subscribed topics:
+        * /robot_vel_pub    [geometry_msgs/Twist]
+    
+    Parameters:
+        * frame_id          =   '/odom'
+        * child_frame_id    =   '/base_footprint'
+    ------------------------------------
+"""
+
+
 import rospy
 import roslib
 import tf
@@ -106,6 +128,7 @@ class OdomPublisher:
         self.yaw_imu = yaw.data
 
 def main():
+    print(msg)
     odom_publisher = OdomPublisher()
     odom_publisher.spin()
 

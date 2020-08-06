@@ -3,6 +3,26 @@
 # Date: 06/08/2020
 # Test: PASSED
 
+msg = """
+    Author: hiennd
+    Create date: 06/08/2020
+    Test: PASSED 07/08/2020
+    -----------------------------------
+    Node: 
+        * /node_serial_mcu
+    
+    Published topics:
+        * /robot_yaw_imu_pub    [std_msgs/Float32] 
+        * /robot_vel_pub        [geometry_msgs/Twist] 
+
+    Subscribed topics:
+        * /cmd_vel              [geometry_msgs/Twist]
+    
+    Parameters:
+        port    =   '/dev/ttyUSB_MCU'
+        baud    =   256000 bps
+    ------------------------------------
+"""
 # ROS
 import rospy
 import roslib
@@ -153,6 +173,7 @@ class NodeSerialComPort:
 
 # -------------Main--------------------
 def main():
+    print(msg)
     nodeSerial = NodeSerialComPort()
     nodeSerial.spin()
 
