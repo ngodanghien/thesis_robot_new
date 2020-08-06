@@ -18,13 +18,14 @@ from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Point, Quaternion, Twist
 from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3
 
-class OdomPublisher1:
+class OdomPublisher:
     def __init__(self): #ok
         #node
         rospy.init_node('odometry_publisher')
         #pub
-        self.odom_pub           = rospy.Publisher("odom", Odometry, queue_size=50)    #50Hz
-        self.odom_broadcaster_tf   = tf.TransformBroadcaster()
+        self.rate = 50      #50 Hz
+        self.odom_pub               = rospy.Publisher("odom", Odometry, queue_size=self.rate)    #50Hz
+        self.odom_broadcaster_tf    = tf.TransformBroadcaster()
         #sub from note (receive data from MCU send up) : node_serial_rx.
         rospy.Subscriber('vel_pub',     Twist,      self.vel_callback)
         rospy.Subscriber('theta_pub',   Float32,    self.yaw_callback)
@@ -45,8 +46,8 @@ class OdomPublisher1:
 
 
     def spin(self): #ok
-        rospy.loginfo("Start odometry_publisher")
-        rate = rospy.Rate(50)  #chuan 50Hz (tested) cho ca /odom vs /tf
+        rospy.loginfo("[ROS][hiennd] Start odometry_publisher (topic: /odom & /tf)")
+        rate = rospy.Rate(self.rate)  #chuan 50Hz (tested) cho ca /odom vs /tf
         while not rospy.is_shutdown():
             self.update()
             rate.sleep()
@@ -105,15 +106,8 @@ class OdomPublisher1:
         seft.yaw_imu = yaw.data
 
 def main():
-    pass
-    #odom_publisher = OdomPublisher()
-    #odom_publisher.spin()
-
-# if __name__ == '__main__':
-#     odom_publisher = OdomPublisher1()
-#     odom_publisher.spin()
-#     #main(); 
-if __name__ == '__main__':
-    pass
-    odom_publisher = OdomPublisher1()
+    odom_publisher = OdomPublisher()
     odom_publisher.spin()
+
+if __name__ == '__main__':
+    main()
