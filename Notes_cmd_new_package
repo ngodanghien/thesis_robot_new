@@ -6,3 +6,14 @@ $ git commit -m "create new package of ros"
 $ git commit -a -m "[Update]: info author for file node_odom.py"
 
 
+# run navigattion test 
+
+#circle
+    $ rosrun thesis_robot_new nav_all.py    
+#square
+    $ rosrun thesis_robot_new nav_all.py _mode_run:='square'
+#num8
+    $ rosrun thesis_robot_new nav_all.py _mode_run:='num8'
+    $ ./nav_all.py _mode_run:='num8'    #thay the
+
+
