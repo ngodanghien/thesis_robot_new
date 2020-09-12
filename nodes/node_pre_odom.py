@@ -37,7 +37,7 @@ import numpy
 # Messages
 from std_msgs.msg import Float32
 from nav_msgs.msg import Odometry
-from geometry_msgs.msg import Point, Quaternion, Twist, Vector3Stamped
+from geometry_msgs.msg import Point, Quaternion, Twist
 from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3
 
 class OdomPublisher:
@@ -46,33 +46,30 @@ class OdomPublisher:
         rospy.init_node('odometry_publisher')
         #pub
         self.rate = 50      #50 Hz
-        self.odom_pub               = rospy.Publisher("odom", Odometry, queue_size=self.rate)    #50Hz
-        self.odom_broadcaster_tf    = tf.TransformBroadcaster()
+
+        # self.odom_pub               = rospy.Publisher("odom", Odometry, queue_size=self.rate)    #50Hz
+        # self.odom_broadcaster_tf    = tf.TransformBroadcaster()
+
+        # self.wheel_left_broadcaster_tf    = tf.TransformBroadcaster() # tf <-> : base_link -> wheel_left_link
+        # self.wheel_right_broadcaster_tf    = tf.TransformBroadcaster() # tf <-> : base_link -> wheel_right_link
+
         #sub from note (receive data from MCU send up) : node_serial_rx.
         rospy.Subscriber('/robot/vel_pub',     Twist,      self.vel_callback)
-        #rospy.Subscriber('/robot/yaw_imu_pub',   Float32,    self.yaw_callback)
-        rospy.Subscriber('/imu/rpy/filtered',   Vector3Stamped,    self.rpyFilter)  #from MPU9250
-        rospy.Subscriber('/dwm1001c/tag',       Point,      self.uwb_sub_callback)
+        rospy.Subscriber('/robot/yaw_imu_pub',   Float32,    self.yaw_callback)
         #param : Note: Neu server ko co thi` ros tu gan: frame_id = '/odom'
         # self.L = rospy.get_param('~robot_wheel_separation_distance', 0.37)
         # self.R = rospy.get_param('~robot_wheel_radius', 0.0625)
         # self.rate = rospy.get_param('~rate', 50)
-        self.frame_id = rospy.get_param('~frame_id','/odom')    
-        self.child_frame_id = rospy.get_param('~child_frame_id','/base_footprint')
+
+        # self.frame_id = rospy.get_param('~frame_id','/odom')    
+        # self.child_frame_id = rospy.get_param('~child_frame_id','/base_footprint')
 
         #varible
         # self.pose = {'x':0, 'y': 0, 'th': 0}
-        # self.pose = {'x':2.19, 'y': 3.69, 'th': 0.0}
-        # self.pose = {'x':0.97, 'y': 1.30, 'th': 0.0}
-        # self.pose = {'x':7.52, 'y': 4.30, 'th': 0.0}
-        self.pose = {'x':1.55, 'y': 2.07, 'th': 0.0} #lab109
 
         self.v = 0  #vx = v; vy = 0;
         self.w = 0
         
-        self.yaw_imu = 0.0
-        self.ready = False
-
         self.last_time = rospy.Time.now()
 
 
@@ -98,8 +95,6 @@ class OdomPublisher:
         
         pose['th'] = math.atan2(math.sin(pose['th']),math.cos(pose['th'])) # squash the orientation to between (-pi,pi)
 
-        #update yaw from IMU
-        pose['th'] = self.yaw_imu
         # Construct odometry message
         odom_msg = Odometry()
         odom_msg.header.stamp = current_time            # self.last_time  == current_time
@@ -123,11 +118,27 @@ class OdomPublisher:
                               self.child_frame_id, \
                               self.frame_id \
                               )
+        #base_link -> wheel_left_link
+        # self.wheel_left_broadcaster_tf.sendTransform( \
+        #                       (pose['x'], pose['y'], 0), \
+        #                       tf.transformations.quaternion_from_euler(0,0,pose['th']), \
+        #                       self.last_time, \
+        #                       "", \
+        #                       "wheel_left_link"\
+        #                       )
+        # #base_link -> wheel_right_link
+        # self.wheel_right_broadcaster_tf.sendTransform( \
+        #                       (pose['x'], pose['y'], 0), \
+        #                       tf.transformations.quaternion_from_euler(0,0,pose['th']), \
+        #                       self.last_time, \
+        #                       "", \
+        #                       "wheel_right_link" \
+        #                       )
     
     #Update
     def update(self):     #ok
-        self.pub_odometry(self.pose)
-        self.pub_tf(self.pose)    
+        # self.pub_odometry(self.pose)
+        # self.pub_tf(self.pose)    
     
     # function Callback: from calc odometry
     def vel_callback(self,vel): #ok
@@ -135,18 +146,8 @@ class OdomPublisher:
         self.w = vel.angular.z   # w robot (rad/s)
 
     # function Callback: yaw from MPU6050
-    # def yaw_callback(self,yaw): #ok
-    #     self.yaw_imu = yaw.data
-    def rpyFilter(self, msg):
-        self.yaw_imu = msg.vector.z  #rad
-    
-    def uwb_sub_callback(self,uwb_msg):
-       #chi lay 1 lan
-       if self.ready == False:
-            self.pose['x'] = uwb_msg.x
-            self.pose['y'] = uwb_msg.y
-            self.ready = True
-
+    def yaw_callback(self,yaw): #ok
+        self.yaw_imu = yaw.data
 
 def main():
     print(msg)

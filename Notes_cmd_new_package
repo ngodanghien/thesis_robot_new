@@ -5,7 +5,7 @@ $ git add -A
 $ git commit -m "create new package of ros"
 $ git commit -a -m "[Update]: info author for file node_odom.py"
 
-
+$ git clone https://github.com/Slamtec/rplidar_ros.git
 # run navigattion test 
 
 #circle
@@ -17,3 +17,46 @@ $ git commit -a -m "[Update]: info author for file node_odom.py"
     $ ./nav_all.py _mode_run:='num8'    #thay the
 
 
+lec:
+DIST,4,AN0,0A9D,0.46,-0.85,0.00,0.40,AN1,4894,0.00,0.00,0.00,0.68,AN2,14AD,2.04,0.00,0.00,1.67,AN3,1123,1.81,0.58,0.00,1.83,POS,0.34,-0.56,-0.15,53
+
+-> System van nhan du het cac Anchor, tuy nhien lec: chi send data 4 dist voi tag ma` gan no nhat (dua ra toa do)
+
+les: chi gui 4 Anchor
+14AD[2.04,0.00,0.00]=1.67 5D1F[6.50,8.35,0.00]=0.68 1B8A[15.00,2.00,0.00]=0.74 0A9D[0.46,-0.85,0.00]=0.40
+
+$ roslaunch thesis_robot_new thesis_robot_model.launch
+
+ ./cmd_send_control.py _mode_control:='disable'
+ ./cmd_send_control.py _mode_control:='enable'
+ ./cmd_send_control.py _mode_control:='imu'
+ 
+
+ $ rosbag record -O read_uwb /dwm1001c/tag
+
+
+$ sudo apt-get install 
+
+ros-kinetic-teleop-twist-keyboard 
+ros-kinetic-laser-proc 
+ros-kinetic-rgbd-launch 
+ros-kinetic-depthimage-to-laserscan 
+ros-kinetic-rosserial-arduino 
+ros-kinetic-rosserial-python 
+ros-kinetic-rosserial-server 
+ros-kinetic-rosserial-client 
+ros-kinetic-rosserial-msgs 
+ros-kinetic-amcl 
+ros-kinetic-map-server 
+ros-kinetic-move-base 
+ros-kinetic-urdf r
+os-kinetic-xacro 
+ros-kinetic-compressed-image-transport 
+ros-kinetic-rqt-image-view 
+ros-kinetic-gmapping 
+ros-kinetic-navigation 
+ros-kinetic-interactive-markers
+
+ 1635  sudo apt install ros-melodic-amcl
+ 1636  sudo apt install ros-melodic-navigation
+ 1637  sudo apt install ros-melodic-move-base

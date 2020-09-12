@@ -1,34 +1,27 @@
 <launch>
 
+  <!-- Nodes: Duoi Jetson Nano run toan bo (tru` rviz), tren PC (Master) chi can mo RVIZ len la xem dc het-->
   <!-- Define COMPort USB2COM -->
   <arg name="portSTM32" default="/dev/ttyUSB_MCU"/>
   <arg name="portLidar" default="/dev/ttyUSB_Lidar"/> 
+  <arg name="portUWB"   default="/dev/ttyUSB_UWB"/> 
+
    
   <!-- link for odom -->
   <arg name="frame_id" default="odom"/> 
   <arg name="child_frame_id" default="base_footprint"/> 
 
   <param name="robot_description" textfile="$(find thesis_robot_new)/urdf/thesis_robot_new.xacro" />
-    <!-- <param name="robot_description" command="$(find xacro)/xacro -+-inorder '$(find thesis_robot_new)/urdf/thesis_robot_new.xacro'" /> -->
 
+  <!-- name="rate = 1000" : pub == pub(odom) 50Hz-->
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <param name="rate" type="int" value="100" /> 
   </node>
 
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
     <param name="publish_frequency" type="double" value="50.0" />
   </node>
 
-  <!-- Call Rosserial_python connect MCU -->
-  <node name="node_serial_mcu" pkg="thesis_robot_new" type="node_serial.py"  output="screen">
-    <param name="~port" type="string" value="$(arg portSTM32)"/>
-    <param name="~baud" value="256000"/>
-  </node>
-
-  <!-- Call odom pub node -->
-  <node name="odometry_publisher" pkg="thesis_robot_new"  type="node_odom.py"  output="screen">
-    <param name="~frame_id"       type="string"           value="$(arg frame_id)"/>
-    <param name="~child_frame_id" type="string"           value="$(arg child_frame_id)"/>
-  </node>
 
   <!-- Call Lidar RPLidar A3 -->
   <node name="rplidarNode"            pkg="rplidar_ros"   type="rplidarNode" output="screen">
@@ -40,7 +33,40 @@
     <param name="angle_compensate"    type="bool"         value="true"/>
   </node>
 
+  <!-- Call UWB Node -->
+  <!-- <node name="UWB_Localizer_DWM1001C" pkg="thesis_robot_new" type="uwb_dwm1001c_main.py"  output="screen">
+    <param name="~serial_port_name" type="string" value="$(arg portUWB)"/>
+    <param name="~serial_baud_rate" value="115200"/>
+  </node> -->
+
+  <!-- Call Rosserial_python connect MCU -->
+  <node name="node_serial_mcu" pkg="thesis_robot_new" type="node_serial.py"  output="screen">
+    <param name="~port" type="string" value="$(arg portSTM32)"/>
+    <param name="~baud" value="256000"/>
+  </node>
+  <!-- IMU MPU9250 -->
+  <node name="node_imu_mpu9250" pkg="thesis_robot_new" type="imu9250.py"  output="screen"> </node>
+
+  <!-- Madgwick Fusion -->
+  <node name="imu_filter" pkg="imu_filter_madgwick" type="imu_filter_node">
+    <param name="use_mag" value="false"/>
+    <param name="publish_tf" value="true"/>
+    <param name="publish_debug_topics" value="true"/>
+    <param name="fixed_frame" value="base_link"/>
+  </node>
+
+  <!-- Call odom pub node == debug (old)-->
+  <!-- <node name="odometry_publisher" pkg="thesis_robot_new"  type="node_odom.py"  output="screen">
+    <param name="~frame_id"       type="string"           value="$(arg frame_id)"/>
+    <param name="~child_frame_id" type="string"           value="$(arg child_frame_id)"/>
+  </node> -->
+  
+  <!-- call EKF Fusion -->
+  <!-- <node name="EKF_Fusion_Localization" pkg="thesis_robot_new" type="node_ekf.py"  output="screen">
+    <param name="~frame_id"       type="string"           value="$(arg frame_id)"/>
+    <param name="~child_frame_id" type="string"           value="$(arg child_frame_id)"/>
+  </node> -->
   <!-- Debug with RVIZ ... -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find thesis_robot_new)/rviz/thesis_robot_model.rviz" required="true" />
+  <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find thesis_robot_new)/rviz/thesis_robot_model.rviz" required="true" /> -->
 
 </launch>

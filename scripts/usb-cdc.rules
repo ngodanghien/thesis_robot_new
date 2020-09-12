@@ -18,3 +18,14 @@ SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", MODE:="0666
 
 #USB2COM - Lida :: Bus 003 Device 007: ID 10c4:ea60 Cygnal Integrated Products, Inc. CP210x UART Bridge / myAVR mySmartUSB light
 SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", MODE:="0666", SYMLINK+="ttyUSB_Lidar"
+
+#UWB : ID 1366:0105 SEGGER
+#ref: https://gist.github.com/edro15/1c6cd63894836ed982a7d88bef26e4af
+#SUBSYSTEM=="tty", ATTRS{idVendor}=="1366", ATTRS{idProduct}=="0105", MODE:="0666", SYMLINK+="ttyUSB_UWB"
+KERNEL=="ttyACM[0-9]*", SUBSYSTEM=="tty", ATTRS{idVendor}=="1366", ATTRS{idProduct}=="0105", SYMLINK="ttyUSB_UWB"
+
+# view info USB
+# udevadm info -a -n /dev/ttyUSB0
+# udevadm info -a -n /dev/ttyUSB0 | grep '{serial}' | head -n1
+# udevadm info -a -n /dev/ttyACM0 | grep '{idVendor}'| head -n1
+# udevadm info -a -n /dev/ttyACM0 | grep 'ATTRS{id' | head -n2
